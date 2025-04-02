@@ -1,5 +1,4 @@
 # AI-Tutor
-# PDF-RAGify
 
 ## Prerequisites
 - Python3
