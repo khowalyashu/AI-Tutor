@@ -2,39 +2,20 @@ import gradio as gr
 from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
 # from langchain_ollama import OllamaLLM
-from sentence_transformers import SentenceTransformer
+from get_embedding_func import get_embedding_function
+
 from vllm import LLM as VLLM
-from langchain.embeddings.base import Embeddings
+
 import torch
 
-class SentenceTransformerEmbeddings(Embeddings):
-    def __init__(self, model_name="nomic-ai/nomic-embed-text-v1.5", device=None, batch_size=32):
-        super().__init__()
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = SentenceTransformer(model_name, trust_remote_code=True, device=self.device)
-        self.batch_size = batch_size  # Control batch size
-        
-    def embed_documents(self, texts):
-        texts = ["search_document: " + i for i in texts]
-        return self.model.encode(
-            texts,
-            convert_to_numpy=True,
-            device=self.device,
-            batch_size=self.batch_size
-        ).tolist()
-        
-    def embed_query(self, text):
-        return self.model.encode(
-            ['search_query: ' + text],
-            convert_to_numpy=True,
-            device=self.device
-        )[0].tolist()
+
+model_name = 'microsoft/phi-4'
 
 # Constants
 CHROMA_PATH = "chroma"
 PROMPT_TEMPLATE = """
 You are an AI agent designed to assist with Unit-related topics for a Retrieval Augmented Generation (RAG) application. You will be provided with context documents from a database that may or may not be entirely relevant to the student's query. Your instructions are as follows:
- 1. Respond ONLY with reflective questions and hints that encourage critical thinking regarding the student's query.
+ 1. Respond ONLY with reflective questions with summary and hints that encourage critical thinking regarding the student's query.
  2. Suggest relevant slides or weeks from the provided documents without revealing their content.
  3. Do not provide direct answers but instead guide the student toward discovering the answer themselves.
  4. Ensure your response remains supportive, motivational, and within the scope of Deakin Unit-related topics.
@@ -46,9 +27,9 @@ Respond with reflective questions, hints, and relevant slides/weeks only.
 """
 
 # Load database and model
-embedding_function = SentenceTransformerEmbeddings()
-db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-model_name = 'microsoft/phi-4'
+local_function = get_embedding_function()
+db = Chroma(persist_directory=CHROMA_PATH, embedding_function=local_function)
+
 
 # Initialize VLLM Model - fixed initialization 
 model = VLLM(
