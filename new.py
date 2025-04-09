@@ -11,10 +11,28 @@ from langchain_community.llms import VLLM
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import TextLoader
 
 
 model_name='microsoft/phi-4'
+# OUTPUT_DIR = 'text_data'
+# loader = DirectoryLoader(OUTPUT_DIR, glob="*.md")
+# documents = loader.load()
+# text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=0)
+# all_splits = text_splitter.split_documents(documents)
+
+
 crawled_pages = '/Users/yashkhowal/Desktop/AI-Tutor/text_data/'
+
+loader = DirectoryLoader(crawled_pages, 
+    loader_cls=TextLoader
+)
+documents = loader.load()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1200, chunk_overlap=0)
+all_splits = text_splitter.split_documents(documents)
+
 class SentenceTransformerEmbeddings(Embeddings):
     def __init__(self, model_name="nomic-ai/nomic-embed-text-v1.5", device=None, batch_size=32):
         super().__init__()
@@ -37,6 +55,11 @@ class SentenceTransformerEmbeddings(Embeddings):
             convert_to_numpy=True, 
             device=self.device
         )[0].tolist()
+    
+local_embeddings = SentenceTransformerEmbeddings(batch_size=64)
+vectorstore = Chroma.from_documents(documents=all_splits, embedding=local_embeddings, persist_directory='./chroma_rl')
+print(f"Number of document splits: {len(all_splits)}")
+print(f"Sample split document: {all_splits[0].page_content[:200]}")
 
 def extract_answers(answers):
     answers = answers.split("<|im_start|>assistant<|im_sep|>")[-1]
@@ -193,7 +216,7 @@ if __name__ == "__main__":
     )
 
     local_embeddings = SentenceTransformerEmbeddings(batch_size=64)
-    vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=local_embeddings)
+    vectorstore = Chroma(persist_directory="./chroma_rl", embedding_function=local_embeddings)
 
     RAG_TEMPLATE = """<|im_start|>system<|im_sep|>
     You are an AI agent designed to assist with Unit-related topics for a Retrieval Augmented Generation (RAG) application. You will be provided with context documents from a database that may or may not be entirely relevant to the student's query. Your instructions are as follows:
