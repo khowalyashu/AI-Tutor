@@ -1,0 +1,452 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Multi-Agent Reinforcement Learning and 
+Related Topics
+Markov Models and Agents
+Markov Models and Agents
+Figure: (a) Markov decision process (MDP) (b) Partially observable Markov decision process (POMDP)
+(c) Decentralized partially observable Markov decision process with two agents (Dec-POMDP)
+Multi-agent Applications
+• Antenna tilt Control
+•
+The joint configuration of cellular base stations can be optimized according to the 
+distribution of usage and topology of the local environment. (Each base station can 
+be modelled as one of multiple agents covering a city.)
+Alina Vereshchaka ( U B )
+November 14, 2019
+4 /  51
+• Traffic congestion reduction
+•
+By intelligently controlling the speed of a few autonomous vehicles we can drastically 
+increase the traffic flow
+•
+Other interesting phenomena (Braess Paradox)
+Braess Paradox
+Alina Vereshchaka ( U B )
+November 14, 2019
+5 /  51
+• Traffic Control Strategies: 
+-Build more roads where there is more traffic?
+A
+B
+20 min
+20 min
+T/10 min
+T/10 min
+T=Traffic
+If 200 vehicles: Total time= 20+(100/10)=30min
+(The 200 drivers split up as 
+100+100)
+Braess Paradox
+Alina Vereshchaka ( U B )
+November 14, 2019
+6 /  51
+A
+B
+20 min
+20 min
+T/10 min
+T/10 min
+T=Traffic
+If 200 vehicles: Total time= (200/10)+0+(200/10)=40min
+0 min 
+(free 
+road)
+In the worst case, T/10=20min. So I 
+might as well stick to this type of 
+road and use the free connecting 
+road 
+Sometimes, closing down roads can help traffic flow!
+Without free road: 30min
+Multi-agent Applications
+• OpenAI Five
+•
+Dota 2 AI agents are
+trained to coordinate with
+each other to compete
+against humans.
+•
+Each of the five AI players
+is implemented as a
+separate neural network
+policy and trained 
+together with large-scale
+PPO.
+•
+They defeated a team 
+of human pros.
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Multi-Agent Reinforcement Learning
+Multi-agent Reinforcement Learning
+(MARL)
+• MARL
+•
+Multiple agents 
+join to take 
+joint actions
+Types of MARL Settings
+•
+Decentralized:
+•
+All agents learn individually
+•
+Communication limitations defined by
+environment
+•
+Descriptive:
+•
+Forecast how agent will behave
+•
+Neither: 
+•
+Agents maximize their utility which may 
+require cooperating and/or competing
+•
+General-sum game
+November 14, 2019
+•
+Centralized:
+•
+One brain / algorithm deployed across
+many agents
+•
+Prescriptive:
+•
+Suggests how agents should behave
+•
+Competitive: 
+•
+Agents compete against each other
+•
+Zero-sum games
+•
+Individual opposing rewards
+• Cooperative: 
+•
+Agents cooperate to achieve a goal
+•
+Shared team reward
+VS
+Foundations of MARL
+November 14, 2019
+Benefits:
+• Sharing experience via 
+communication, 
+teaching, imitation
+• Parallel computation 
+due to decentralized task 
+structure
+• Robustness redundancy, 
+having multiple agents 
+to accomplish a task
+Challenges in Multi-agent Learning
+Systems
+•
+Curse of dimensionality
+•
+Exponential growth in computational complexity from increase in state and
+action dimensions.
+•
+Also a challenge for single-agent problems.
+•
+Specifying a good (learning) objective
+•
+Agent returns are correlated and cannot be maximized independently.
+•
+The system in which to learn is a moving target
+•
+As some agents learn, the system which contains these agents changes, and so may
+the best policy.
+•
+Also called a system with non-stationary or time-dependent dynamics.
+•
+Need for coordination
+•
+Agent actions affect other agents and could confuse other agents (or herself) if
+not careful. Also called destabilizing training.
+Challenges: Non-stationarity of
+Environment
+Challenges: High Variance of Estimates
+In Summary…
+• In single agent RL, agents need only to adapt their behaviour in
+accordance with their own actions and how they change the
+environment.
+• In MARL agents also need to adapt to  other agents’ learning and 
+actions. The effect is that agents can execute the same action  on 
+the same state and receive different rewards.
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Game Theory
+Game Theory: Concepts
+November 14, 2019
+What is Game Theory?
+-The mathematics of conflict
+-Assumes players are rational
+-Increasing number of applications in AI
+-Applications: economics, politics, robotics, etc.,
+Source:https://www.scientificamerican.com/article/beautiful-mind-john-nash-s-schizophrenia-disappeared-as-he-aged/
+John Nash
+-Proposed by John Nash in his 27 page PhD thesis
+A simple game
+November 14, 2019
+1
+2
+3
+4
+-a, b make choices (L/R)
+L
+L
+M
+R
+R
+L
+R
+R
++2
++4
+-1
++3
++7
+- MDP: policy     Game Theory: Strategy
+2 player zero sum finite deterministic 
+game with perfect information
+a makes a choice
+b makes a choice
+a makes a choice
+- Rewards of agents add up to the 
+same number
+A simple game
+November 14, 2019
+1
+2
+3
+4
+L
+L
+M
+R
+R
+L
+R
+R
++2
++4
+-1
++3
++7
+2 player zero sum finite deterministic 
+game with perfect information
+a makes a choice
+b makes a choice
+a makes a choice
+a:
+a:1
+4
+b:
+2
+3
+L
+L
+L
+R
+R
+L
+R
+R
+R
+R
+R
+L
+M
+R
+7
+3
+-1
+4
+7
+3
+2
+2
+2
+2
+2
+2
+Matrix form of the game
+A simple game: minimax
+a:
+a:1
+4
+b:
+2
+3
+L
+L
+L
+R
+R
+L
+R
+R
+R
+R
+R
+L
+M
+R
+7
+3
+-1
+4
+7
+3
+2
+2
+2
+2
+2
+2
+Matrix form of the game
+a tries to pick the best row 
+for it 
+b tries to pick the best 
+column for it 
+Or the other way around – 
+one tries to ‘max’, the other 
+tries to ‘min’
+Value of the game
+Nash Equilibrium
+Given n players with strategies: 𝑆= {𝑆!, … 𝑆", … 𝑆#}
+𝑆!
+∗∈𝑆!, 𝑆%
+∗∈𝑆%, 𝑆&
+∗∈𝑆&….. 𝑆#
+∗∈𝑆# 
+∀"𝑆"
+∗= 𝑎𝑟𝑔𝑚𝑎𝑥'∗ 𝑈"(𝑆!
+∗, … 𝑆#∗)
+Basically, in a Nash Equilibrium, if you pick a player at random, they 
+would prefer to not deviate from their optimal strategy, given the 
+optimal strategies of other players
+Are in Nash Equilibrium iff:
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Multi-Agent Reinforcement Learning 
+Formulation
+Stochastic Games
+𝑆:State space
+𝐴": Action space for each agent               a ∈𝐴#, 𝑏∈𝐴$
+𝑅": Rewards for each player i                   𝑅#(𝑠, (𝑎, 𝑏)), 𝑅$(𝑠, (𝑎, 𝑏))
+Τ: Transitions function                             𝑇(𝑠, 𝑎, 𝑏, 𝑠′)
+𝛾: Discount factor
+November 14, 2019
+Generalisation of the MDP formulation (Shapley) – published before Bellman
+Zero sum Stochastic Games: Bellman 
+Equation
+November 14, 2019
+𝑄s, a : R s, a + 𝛾)
+!"
+𝑇(𝑠, 𝑎, 𝑠′) 𝑚𝑎𝑥#"𝑄(𝑠", 𝑎′)
+Single agent:
+𝑄$ s, (a, b) : 𝑅$ s, (a, b) + 𝛾)
+!%
+𝑇𝑠, 𝑎, 𝑏, 𝑠" 𝑚𝑎𝑥#%%%𝑄(𝑠", (𝑎", 𝑏"))
+Two agents (zero sum):
+But we are no longer the only agent trying to 
+maximise reward! Use minimax!
+First MARL Algorithm: Minimax-Q
+(Littman ‘94)
+Q-values are over joint actions: Q(s, a, o)
+•
+s = state
+•
+a = your action
+•
+o = action of the opponent
+Instead of updating Q values with maxQ(s', a'), use MaxMin
+November 14, 2019
+𝑄s, (a, b)
+= 𝑄s, (a, b) + 𝛼[𝑅$ s, a, b
++ 𝛾𝑚𝑖𝑛𝑖𝑚𝑎𝑥#%%%𝑄𝑠", 𝑎", 𝑏"
+−𝑄s, (a, b ]
+Only change from Q learning
+Multi-agent Deep Q-Network (MADQN)
+• MADQN is a Deep Q-Network 
+for Multi-agent RL
+•
+n pursuit-evasion – a set of agents
+(the pursuers) are attempting to 
+chase another set of agents (the
+evaders)
+•
+The agents in the problem are
+•
+self-interested (or 
+heterogeneous), i.e. they have
+different objectives
+•
+The two pursuers are attempting to
+catch the two evaders
+November 14, 2019
+26 /  51
+Other Deep RL approaches
+• MADDPG (multi agent deep deterministic policy gradients): multiagent 
+extension of DDPG
+November 14, 2019
+•
+Multi-Agent Common Knowledge Reinforcement Learning: more 
+focused on cooperative tasks
+•
+Qmix: For training decentralised policies
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Other Related Topics: Action Advising
+Teacher-Student Framework
+November 14, 2019
+Teacher already knows a good policy
+Student learns from scratch, but can ask for advice
+Advice is limited, can have an associated cost
+How can the student quickly best leverage the provided advice while 
+staying within the advice budget?
+Teachers cannot access student knowledge
+Does not explicitly fall under multiagent learning, but involves one 
+agent teaching the other
+Action Advising
+November 14, 2019
+n: Advice Budget 
+Action Advising
+November 14, 2019
+*Teaching on a Budget: Agents Advising Agents in Reinforcement Learning, Torrey& Taylor (AAMAS, 2013)
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on introducing Multi-agent RL.
+For more detailed information see:
+•
+https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893
+•
+Littman, Michael L. "Markov games as a framework for multi-agent reinforcement learning." Machine learning 
+proceedings 1994. Morgan Kaufmann, 1994. 157-163.
+•
+Teaching on a Budget: Agents Advising Agents in Reinforcement Learning, Torrey& Taylor (AAMAS, 2013)
+• Multiagent Reinforcement Learning presentation by Marc Lanctot RLSS @ Lille, July 11th 2019 
+http://mlanctot.info/files/papers/Lanctot_MARL_RLSS2019_Lille.pdf 
+• Multiagent Learning Foundations and Recent Trends by Stefano Albrecht and Peter Stone Tutorial at IJCAI 2017 
+conference
+ 
+https://www.cs.utexas.edu/~larg/ijcai17_tutorial/
+Readings
+32

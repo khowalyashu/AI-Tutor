@@ -1,0 +1,448 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Dr. Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+MDPs and Dynamic Programming
+Deakin University CRICOS Provider Code: 00113B
+The Problem
+•
+Each step you are faced with the same choice of actions.
+•
+After choosing an action you end up in the same state but will have received a 
+reward for the action taken
+–
+Positive, negative or zero
+–
+The reward is stochastic – we will assume a normal distribution, but
+any distributions can be studied
+•
+Your objective is to maximise your reward over a period of time.
+–
+Can often focus on minimising regret instead.
+Examples
+•
+Slot machines – people often search for the ‘luckiest’ machine
+•
+Doctor finding the best medicine for your medical condition
+•
+Recommendation systems.
+•
+Anomaly detection
+•
+…
+So, which action should you choose?
+Week 2 Recap:
+2
+https://www.rubyfortune.com/blogrfc/images/uploads/2019/07/Pixabay-Vintage-Slots.png
+S
+a0
+a1
+a2
+a3
+a4
+a5
+Deakin University CRICOS Provider Code: 00113B
+The above algorithm has five primary steps that are often replaced with different approaches. 
+•
+Initialisation (prior to loop)
+•
+Action selection
+•
+Gather any reward (in full problem this will include getting the new state)
+•
+Update step counter (or other internal parameter adjustments)
+•
+Update Q estimate (update new state to current state)
+Week 2 recap: Basic MAB Algorithm
+3
+Initialise: for 𝑎= 1 to k
+ 
+𝑄𝑎←0
+ 
+𝑁(𝑎) ←0
+Loop forever:
+ 
+𝐴←ቐ
+argmax
+𝑎
+𝑄(𝑎)
+with probability 1 −𝜀
+(breaking ties randomly)
+random
+𝑎
+𝑄(𝑎)
+with probability 𝜀
+ 
+𝑅←𝑏𝑎𝑛𝑑𝑖𝑡𝐴
+ 
+𝑁𝐴←N A + 1
+ 
+𝑄𝐴←𝑄𝐴+
+1
+𝑁(𝐴) [𝑅−𝑄𝐴]
+Optimistic initialisation
+Deakin University CRICOS Provider Code: 00113B
+Ontrack task: Value Calculation
+4
+The red arrows represent the policy 𝜋
+Is the shown policy the optimal one  𝜋∗?
+What is the optimal policy 𝜋∗ here?
+Discounted; set 𝛾= 0.9
+Undiscounted; set 𝛾= 1
+Deakin University CRICOS Provider Code: 00113B
+Questions from workshop:
+5
+How to deal with continuous states and continuous actions?
+Deakin University CRICOS Provider Code: 00113B
+Formally, the RL problem is formulated as a Markov Decision Process (MDP)
+•
+An MDP is a tuple 𝑀={𝒮, 𝒜, 𝒯, 𝛾, ℛ}
+–
+𝒮 -  The set of possible states
+–
+𝒜 -  The set of actions the agent can take
+–
+𝒯 -  transition probabilities  
+–
+𝛾 -  The discount rate or the discount factor.
+–
+ℛ -  A reward distribution function conditioned.
+The Problem
+6
+R=0
+R=0
+R=0
+R=-1
+1.0
+0.8
+0.1
+0.05
+0.05
+Reward function
+Deterministic transition
+Probabilistic transition
+Deakin University CRICOS Provider Code: 00113B
+Consider: When you press a button on your Spotify player to skip forward one 
+song it combines the input you just entered with preceding events.
+•
+Such as the selection of shuffle or repeat
+•
+Current playlist selected
+•
+Other music that matches your taste
+Finite State Machine
+7
+S0
+S1
+0
+0
+1
+1
+0
+1
+S0
+S0
+S1
+S1
+S1
+S0
+Thus, a machine is a system that accepts input values, possibly produces 
+outputs, and has an internal mechanism to track previous inputs/events
+A Finite state machine is a graph representation
+•
+A finite, directed, connected graph
+•
+Contains a set of states (graph nodes)
+•
+A set of inputs/actions (arcs)
+•
+A state transition function, describing the effect of the inputs on the states
+Deakin University CRICOS Provider Code: 00113B
+A PFSM is a FSM where the next state function is a probability distribution over the full set of states of the 
+machine.
+•
+May contain a number of transitions for each input
+•
+Each transition has a probability (0-1)
+•
+The transitions for an input should add to 1
+•
+The probability represents the random chance of selecting that path
+Probabilistic Finite State Machine
+8
+Deakin University CRICOS Provider Code: 00113B
+Background:
+•
+Robot must try and collect rubbish for recycling without running out of power. 
+Problem
+•
+Simplified problem assumes low level control is handled by other systems
+•
+Learn to collect rubbish only when the risk of running out of power is low.
+Defining an MDP – episodic
+•
+State – Symbolic discrete states
+–
+Currently has ‘high’ or ‘low’ charge.
+•
+Actions – Produces a vector of actions (not a single action)
+–
+Wait – no chance of changing state, but smaller chance of getting a reward.
+–
+Search for rubbish, when state is ‘high’ there is a 1 −𝛼 chance it will change to state ‘low’. 
+–
+Search for rubbish, when state is ‘low’ there is a 1 −𝛽 chance battery will go flat.
+–
+Recharge (only from state ‘low’) – transitions to state ‘high’, no reward
+•
+Rewards (positive and negative rewards)
+–
+Small chance of finding a can when searching or waiting. Each can collected is a +1 reward. 
+–
+A reward (penalty) of -3 if the robot needs rescuing as it ran out of power.
+Example – Recycling Robot
+9
+https://www.environmentalleader.com/wp-content/uploads/2017/03/robot.jpg
+Sutton and Barto, Page 74
+Deakin University CRICOS Provider Code: 00113B
+Named after Andrey Markov, a Markov Model is a stochastic model used to model randomly changing systems.
+The same as a probabilistic finite state machine except it ignores the input values.
+•
+In other words each transition is only labelled with a probability
+Can be used to model a large number of natural phenomena and processes
+Markov Model
+10
+S0
+S2
+S1
+S3
+Deakin University CRICOS Provider Code: 00113B
+An Observable Markov Model is first-order if the probability of it being in the present state 𝑆𝑡 at any time 𝑡 is a 
+function only of its being in the previous state 𝑆𝑡−1 at the time 𝑡−1, where 𝑆𝑡 and 𝑆𝑡−1 belong to the set of 
+observable states 𝒮.
+•
+For all states 𝑆𝑖 and 𝑆𝑗 we can say 𝑝𝑖𝑗= 𝑃𝑆𝑡+1 = 𝑆𝑗𝑆𝑡= 𝑆𝑖) for all time, 𝑡. These probabilities are assumed to be stationary.
+•
+These probabilities create a transition probability matrix, eg matrix M below.
+•
+Note, there are also second, third-order, … Markov models that consider multiple nodes contribute to the transition probability. 
+–
+While there is research into second-order approaches to RL – we will not consider them
+As a First-Order Markov Model moves from one discrete node to the next  based only on the previous node it is 
+also referred to as a Markov Chain
+First-Order Markov Model (Markov Chain)
+11
+S0
+S1
+S2
+S3
+Total
+S0
+0.4
+0.3
+0.2
+0.1
+1.0
+S1
+0.2
+0.3
+0.2
+0.3
+1.0
+S2
+0.1
+0.3
+0.3
+0.3
+1.0
+S3
+0.2
+0.3
+0.3
+0.2
+1.0
+Deakin University CRICOS Provider Code: 00113B
+What if we can’t know the state completely?
+Partially Observable MDPs (POMDPs)
+12
+Eg: We see what looks like a tiger’s tail, but the rest of the tiger is behind a wall
+Can we say for sure that the state should contain `Tiger’?
+Deakin University CRICOS Provider Code: 00113B
+Partially Observable MDPs (POMDPs)
+13
+Source: https://www.davidsilver.uk/wp-content/uploads/2020/03/MDP.pdf
+Deakin University CRICOS Provider Code: 00113B
+An MDP provides a single scalar reward each time step indicating the success/failure of the agent.
+•
+The objective of the agent is to maximise this reward – hence achieving its goal
+However, many problems naturally have multiple conflicting objectives.
+•
+Shoot down the enemy plane without being shot down yourself
+•
+Release enough water to power the city but save some for future droughts
+•
+Make as much profit as possible while release as little green house gases as possible
+Multi-Objective MDP (MOMDP)
+14
+https://www.researchgate.net/profile/Gary_Yen/publication/3949961/figure/fig2/AS:830625074384897@1575047858467/Architecture-of-a-simple-hierarchical-RL-agent.pbm
+Objective 1
+Objective 2
+Pareto Front
+A Multi-objective MDP (MOMDP) is an MDP except instead of a single reward
+•
+Has a vector of rewards – one for each objective
+Instead of finding a single optimal policy it works on a set of pareto optimal policies
+Two main types of MORL Problems:
+Single-policy MORL : aims to find a single policy on the front which is a good match to 
+some pre-defined specifications
+Multi-policy MORL aims to find a good approximation to this front
+Solutions accurate (close to the actual front)
+Solutions are well distributed along the front
+Similar extent to the actual front
+Deakin University CRICOS Provider Code: 00113B
+Markov Model Cheat Sheet
+15
+Source: https://www.cs.cmu.edu/~ggordon/780-fall07/lectures/POMDP_lecture.pdf
+Markov Models
+Do we have control over the 
+state transitions?
+No
+Yes
+Are the states 
+completely 
+observable?
+Yes
+Markov Chain
+MDP (Markov 
+Decision 
+Process)
+No
+HMM (Hidden 
+Markov 
+model)
+POMDP 
+(Partially 
+observable 
+MDP)
+Deakin University CRICOS Provider Code: 00113B
+MDP Types
+16
+Basis
+Horizon:
+Finite
+Infinite
+State Transitions:
+Deterministic
+Stochastic
+Terminal condition:
+Episodic
+Continuous
+Discounting:
+Discounted (𝛾<1)
+Undiscounted (𝛾=1)
+Observability:
+Fully observable
+Partially observable
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Dr. Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Dynamic Programming
+Deakin University CRICOS Provider Code: 00113B
+Dynamic Programming
+18
+Developed by Richard Bellman (1950s)
+Source http://www.breves-de-maths.fr/richard-bellman-et-la-
+programmation-dynamique/
+Source: 
+https://pubsonline.informs.org/doi/pdf/10.1287/opre.50.1.48.17791
+Deakin University CRICOS Provider Code: 00113B
+Dynamic Programming
+19
+What is Dynamic Programming?
+Mathematical optimisation technique used to find optimal solutions to MDPs
+It requires the availability of the perfect model of the system (i.e., full knowledge of the 
+transition probabilities)
+DP can be used to compute optimal value functions using `Bellman update equations’
+Deakin University CRICOS Provider Code: 00113B
+Dynamic Programming
+20
+Consequences of 
+current action
+The best it can do in the future
+“The only thing that matters is where you are (state) and what you do (actions)”
+Deakin University CRICOS Provider Code: 00113B
+Policy Evaluation (Prediction)
+21
+We want to evaluate a given policy π
+Iteratively applying this update will result in the value function
+Deakin University CRICOS Provider Code: 00113B
+Policy Evaluation (Prediction)
+22
+=
+Deakin University CRICOS Provider Code: 00113B
+Policy Improvement
+23
+Now we know how good it is to follow the current policy from state s
+Would it be better to change to a new policy from s?
+One way to find out: Choose                  and then continue following the 
+original policy 
+The new policy       is better if: 
+Comes from the Policy Improvement Theorem
+Deakin University CRICOS Provider Code: 00113B
+Policy Improvement (Example)
+24
+Deakin University CRICOS Provider Code: 00113B
+Policy Iteration
+25
+Evaluate policy, then 
+improve, then evaluate 
+again and then improve 
+again …… till 
+convergence!
+Disadvantage: Requires 
+policy evaluation loop
+Deakin University CRICOS Provider Code: 00113B
+Value Iteration
+26
+The Bellman optimality 
+eq. is turned into an 
+update rule.
+Converges faster than 
+policy iteration.
+Evaluates and improves 
+policy simultaneously
+Deakin University CRICOS Provider Code: 00113B
+Generalized Policy Iteration
+27
+When does evaluation stabilise?
+When does improvement stabilise?
+If both stabilise, then the value function and 
+policy must have converged (optimum)
+Deakin University CRICOS Provider Code: 00113B
+DP disadvantages?
+28
+Not suitable for very large problems
+No. of states grows exponentially with no. of state variables – Curse of Dimensionality!
+Requires sweep over entire state space – Asynchronous DP is a solution
+It requires a model of the system – RL does not need a model in general
+Prioritized sweeping: Use                          as a basis for deciding which 
+states to update 
+Bootstrapping – updating an estimate based on another estimate
+-errors can add up!
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on the MDPs, Finite state machines and 
+Dynamic programming.
+•
+Ensure you understand what was discussed here before moving to 
+the subsequent topics
+For more detailed information see Sutton and Barto (2018) 
+Reinforcement Learning: An Introduction
+•
+Chapter 3: Finite Markov Decision Processes 
+•
+http://incompleteideas.net/book/RLbook2020.pdf
+Readings
+29

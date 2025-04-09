@@ -1,0 +1,176 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Introduction to Multi-Objective 
+Reinforcement Learning
+Agent takes actions in its environment
+Can all problems be expressed in the 
+form of rewards?
+RL so far:
+Maximise sum of rewards  
+Sutton’s Reward Hypothesis: 
+“All of 
+what we mean by goals and purposes can 
+be well thought of as maximization of the 
+expected value of the cumulative sum of a 
+received scalar signal (reward).”
+But how to compress all objectives into such a 
+scalar reward? – Not easy! 
+Are rewards enough?
+A more pragmatic approach: we often care about multiple objectives, which need to be 
+optimised together  
+Multi-Objective Reinforcement Learning
+How to deal with multiple objectives?
+One reward function for each objective
+Multiobjective RL
+But how deal with these? 
+𝑟1,
+ 
+𝑟2
+Combine them into a scalar value:
+𝑟= 𝑤1𝑟1 + 𝑤2𝑟2
+𝑤 specifies the preferences
+Single objective: only 1 solution
+MultiObjective: multiple solutions (even with 2 objectives)
+Multiobjective RL
+𝑂𝑏𝑗𝑒𝑐𝑡𝑖𝑣𝑒 2
+𝑂𝑏𝑗𝑒𝑐𝑡𝑖𝑣𝑒 1
+In general, n_objectives>2
+Optimal Solutions (Pareto front): non-dominated policies
+-same performance in terms of the scalarised rewards
+At the end, we care about agent behaviours
+Semi-blind process  
+Specifying Preferences
+Pick a w, check if any of the solutions correspond to the desired behaviour
+If not, pick a different w
+Undue burden on engineers/designers
+The solutions are not explainable
+Problems with Scalarisation
+Linear model cannot encompass complex preferences we may have
+Preferences change over time
+Power production application – 
+for double the power, cannot just double 𝑤𝑝 
+𝑟= 𝑤𝑝𝑟𝑝+ 𝑤𝑐𝑟𝑐
+MORL Examples
+Wind farms: maximise power, minimise wear
+Other non-linear factors
+Transport: minimise travel time, also minimise cost
+Can prepare yourself 
+with a set of policies 
+– useful when trains 
+are cancelled etc.,
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+MORL: Problem setting and Formulation
+MultiObjective MDP
+MOMDP
+In MOMDPS, the value function is a vector 
+MOMDP: Utility Function
+Utility functions scalarise the multiobjective value vector to a scalar
+The optimal policy is not clearly defined unless we know how the objectives are prioritised
+However, scalarisation has its own problems, as discussed earlier
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+MORL: Taxonomy
+Single                                             vs                                 Multiple policies
+MORL: Taxonomy
+Single policy- If utility is known at the 
+time of planning
+Multiple policies- If utility is unknown
+Linear utility                                             vs                                 Non-linear Utility policies
+User preferences may not be 
+adequately expressed
+May better express user preferences
+Deterministic policies  
+ 
+vs                                 Stochastic policies
+When utility is linear, the optimal policy 
+is deterministic and stationary
+In some cases, stochastic policies should 
+never be permitted
+Scalarised Expected Returns (SER)
+MORL: Optimisation Criteria
+Expected Scalarised Returns (ESR)
+These lead to different solutions when 
+the utility is non-linear
+MORL: Metrics
+Hypervolume
+Dominated
+Part of non-dominated set
+Larger the hypervolume the better
+MORL: Metrics
+When the hypervolume is similar, choose the solution that is most spread out in the space
+Sparsity  metric for m objectives. S is the pareto front approximation
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+MORL: Algorithms
+Adaptation of Q learning
+MORL: Single Policy Algorithms
+Q  vectors instead of Q values
+Scalarisation function is needed to for action selection
+*May fail to converge if transitions are stochastic
+Pareto Q learning: based on dynamic programming 
+variant that returned pareto dominating policies
+MORL: Multi-Policy Algorithms
+Source: Van Moffaert, Kristof, and Ann Nowé. "Multi-objective reinforcement learning using sets of 
+pareto dominating policies." The Journal of Machine Learning Research 15.1 (2014): 3483-3512.
+Episodic problems with terminal state
+Model-free
+Produces deterministic non-stationary policies
+Set Evaluation Mechanisms. (based on hypervolume, cardinality etc.,) 
+Pareto Q learning
+MORL: Multi-Policy Algorithms
+Source: Van Moffaert, Kristof, and Ann Nowé. "Multi-objective reinforcement learning using sets of 
+pareto dominating policies." The Journal of Machine Learning Research 15.1 (2014): 3483-3512.
+Set Evaluation Mechanisms 
+MORL: Multi-Policy Algorithms
+Source: Van Moffaert, Kristof, and Ann Nowé. "Multi-objective reinforcement learning using sets of 
+pareto dominating policies." The Journal of Machine Learning Research 15.1 (2014): 3483-3512.
+Hypervolume Set Evaluation
+Cardinality Set Evaluation: 
+based on number of Pareto 
+dominating ෠𝑄-vectors of the 
+Qset of each action
+MORL Benchmarks
+https://mo-gymnasium.farama.org/index.html 
+MultiObjective Gymnasium
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+MORL: Related Topics and Open Questions
+MORL Related Topics
+Human-alignment- how to take humans’ preferences into account
+RL Safety- Training RL algorithms efficiently, but at the same time, avoiding unsafe actions
+Explainable RL, Moral decision making
+https://www.moralmachine.net/
+MORL Open Questions
+Many-Objective Problems (n_objectives>4)
+MultiAgent RL Problems (MOMADM). - several challenging problems
+How to dynamically identify and add objectives? 
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on introducing Multi-objective RL.
+For more detailed information see:
+• Hayes, Conor F., et al. "A practical guide to multi-objective reinforcement learning and planning." Autonomous Agents and Multi-Agent Systems 36.1 
+(2022): 26.
+• Van Moffaert, Kristof, and Ann Nowé. "Multi-objective reinforcement learning using sets of pareto dominating policies." The Journal of Machine 
+Learning Research 15.1 (2014): 3483-3512.
+• Miguel Terra-Neves, Ines Lynce, Vasco Manquinho — Stratification for  Constraint-Based Multi-Objective Combinatorial Optimization 
+• Diederik M. Roijers, Luisa M. Zintgraf, Pieter Libin, Ann Now´e —  Interactive Multi-Objective Reinforcement Learning in Multi-Armed  Bandits for 
+Any Utility Function
+• Felten, Florian, et al. "A toolkit for reliable benchmarking and research in multi-objective reinforcement learning." Advances in Neural Information 
+Processing Systems 36 (2024).
+Readings
+26

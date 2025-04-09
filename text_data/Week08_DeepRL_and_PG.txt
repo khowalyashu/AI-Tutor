@@ -1,0 +1,429 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Deep Reinforcement Learning
+Deakin University CRICOS Provider Code: 00113B
+Recap: Function approximation
+2
+State
+Action
+s1
+s2
+s3
+s4
+a1
+a2
+a3
+Q(s1,a1)
+Q(s2,a1)
+Q(s3,a1)
+Q(s4,a1)
+Q(s1,a2)
+Q(s2,a2)
+Q(s3,a2)
+Q(s4,a2)
+Q(s1,a3)
+Q(s2,a3)
+Q(s3,a3)
+Q(s4,a3)
+𝜋∗
+Function approximators 
+(Linear, RBF, NN)
+Neural Networks as a function approximator
+•
+Rumelhart 1986 – great early success
+•
+Interest subsides in the late 90’s as other models are introduced – SVMs, 
+Graphical models, etc. 
+•
+Convolutional Neural Nets – LeCun ,1989 ,for Image recognition, speech, etc. 
+•
+Deep Belief nets (Hinton) and Stacked auto-encoders (Bengio) in 2006
+•
+Unsupervised pre-training followed by supervised training
+•
+Good feature extractors.
+•
+2012 Initial successes with supervised approaches which overcome vanishing gradient
+3  |
+Antonio Robles-Kely
+What is a Deep Network?
+4  |
+Krizhevsky, Sutskever, Hinton — NIPS 2012
+Lion
+Antonio Robles-Kely
+Intuition…
+•
+First layer learns 1st order features (e.g. edges…)
+•
+Higher order layers learn combinations of features (combinations of edges, 
+etc.)
+•
+Some models learn in an unsupervised mode and discover general features of 
+the input space – serving multiple tasks related to the unsupervised instances 
+(image recognition, etc.)
+• Final layer of transformed features are fed into supervised layer(s)
+• And entire network is often subsequently tuned using supervised training of 
+the entire net, using the initial weightings learned in the unsupervised phase
+5  |
+•
+Neural networks have been shown to be a universal function 
+approximator (it can approximate any function given enough data 
+and model complexity) 
+6  |
+Antonio Robles-Kely
+Properties
+•
+Convolutional nets – for image inputs, MLP: for other type of 
+inputs, Time series: Recurrent NNs etc.,
+•
+It is after all, a supervised learning technique. So data must be 
+i.i.d. (Independent and identically distributed)
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Deep Nets and Reinforcement Learning
+What is Deep Reinforcement Learning?
+•
+Deep reinforcement learning is standard reinforcement learning where a deep neural 
+network is used to approximate either a policy or a value function
+•
+Deep neural networks require lots of real/simulated interaction with the environment to 
+learn
+•
+Lots of trials/interactions is possible in simulated environments
+•
+We can easily parallelise the trials/interaction in simulated environments
+•
+We cannot do this with robotics (no simulations) because action execution takes time, 
+accidents/failures are expensive and there are safety concerns
+Deep Q-Networks (DQN)
+•
+It is common to use a function 
+approximator Q(s, a; θ) to 
+approximate the action-value 
+function in Q-learning
+•
+Deep Q-Networks is Q-learning with a 
+deep neural network function 
+approximator called the Q-network
+•
+Discrete and finite set of actions A
+•
+Example: Breakout has 3 actions – 
+move left, move right, no movement
+•
+Uses epsilon-greedy policy to select 
+actions
+Q-Networks
+•
+Core idea: We want the neural network to learn a non-linear hierarchy of features 
+or feature representation that gives accurate Q-value estimates
+•
+The neural network has a separate output unit for each possible action, which gives the 
+Q-value estimate for that action given the input state (Can also be coded such that each 
+state-action pair produces one Q value as output)
+•
+The neural network is trained using mini-batch stochastic gradient updates and 
+experience replay
+- Go though batches in the dataset
+- These batches make up for an epoch
+- Go through several epochs until convergence
+Experience Replay
+• Experience is a sequence of states, actions, rewards and next states et = (st, at, 
+rt, st+1)
+• Store the agent’s experiences at each time step et = (st, at, rt, st+1) in a dataset 
+D = e1, ..., en pooled over many episodes into a replay memory
+• In practice, only store the last N experience tuples in the replay memory and 
+sample when performing updates
+• These experiences occur in sequence. So need to randomise them to make them i.i.d.
+• It may require a lot of experience to obtain enough samples.
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Deep Q-Learning
+Q-Network Training
+•
+Sample random mini-batch of experience tuples uniformly at random from D 
+(replay buffer)
+•
+Similar to Q-learning update rule but: 
+- Use mini-batch stochastic gradient updates
+- The gradient of the loss function for a given iteration with respect to the 
+parameter θi is the difference between the target value and the actual value is 
+multiplied by the gradient of the Q function approximator Q(s, a; θ) with respect 
+to that specific parameter
+•
+Use the gradient of the loss function to update the Q function approximator
+Loss Function Gradient Derivation
+DQN Algorithm
+Regular Q learning update:
+DQN in Practice: Trick 1 – Experience 
+Replay
+•
+It was previously thought that the combination of simple online reinforcement 
+learning algorithms with deep neural networks was fundamentally unstable
+•
+The sequence of observed data (states) encountered by an online reinforcement 
+learning agent is non-stationary and online updates are strongly correlated
+•
+The technique of DQN is stable because it stores  the agent’s data in experience 
+replay memory so that it can be randomly sampled from different time-steps
+•
+Aggregating over memory reduces non-stationarity and decorrelates updates but 
+limits methods to off-policy reinforcement learning algorithms
+•
+Experience replay updates use more memory and computation per real 
+interaction than online updates, and require off-policy learning algorithms that 
+can update from data generated by an older policy 
+DQN in Practice: Trick 2
+Source: https://huggingface.co/learn/deep-rl-course/unit3/deep-q-algorithm
+Use two networks: a 
+policy network and 
+target network
+Freeze the target 
+network and 
+update it only 
+after C steps
+Tends to stabilize 
+learning
+DQN in Practice: Trick 3
+Clip rewards to some fixed range [-1,1]
+Not so important, but it helps
+Using these 3 “tricks”, DQN training became stable
+No convergence guarantees! 
+Converges to a local optimum that 
+is not far from the global optimum
+DQN Example: Playing Atari Games
+Presentation title  |  Presenter name
+19  |
+Mnih et al. (2015). Human-level control through deep reinforcement learning
+•
+The input is the 8x8 
+image region about the 
+current position of the 
+snake.
+•
+Q-network with 3 
+convolutional layers of 
+size
+•
+32x8x8;stride 4 
+•
+64x4x4;stride 4
+•
+64x3x3;stride 2  
+•
+The final two layers are 
+fully connected layers 
+with 512
+DQN Example: Playing Atari Games
+20  |
+>= Humans
+Poor sample efficiency
+Each game learned from 
+scratch
+DQN Example: Playing Atari Games
+21  |
+DQN Example: Playing Atari Games
+22  |
+Better than human performance
+May need excessive data ~ 109 samples (if 1s per sample, then >31 years!)
+Still needs actions to be discrete – not feasible in many cases
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Dealing with continuous actions
+RL algorithm types
+Three approaches to find RL policy:
+Agent
+Environment
+r (reward) 
+s’ 
+(next state) 
+1. Value-based methods 
+(everything covered so far, 
+incl. DQN)
+2. Directly obtain policy 
+(policy gradient methods)
+3. Actor-critic methods 
+(combination of 1. and 2.)
+Policy Gradient Methods
+•
+Several kinds:
+•
+Finite Difference Policy Gradient
+•
+Monte Carlo Policy Gradient
+•
+Actor-Critic Policy Gradient
+•
+Directly parameterize and learn the policy
+ 
+𝜋𝑎𝑠= 𝑓! 𝜙(𝑠, 𝑎)
+•
+Can have several forms such as:
+                                                        𝜋𝑎𝑠∝exp 𝜃!𝜙(𝑠, 𝑎)
+Feature vector of state-action pair
+Why not directly define 𝜋𝑎𝑠∝exp( 𝜆𝑣𝑠, 𝑎)?
+Temperature of soft-max
+No need to be related to the value function!
+What are Policy Gradient Methods?
+•
+Before: Learn the values of actions and then select actions based on their estimated 
+action-values. The policy was generated directly from the value function
+•
+We want to learn a parameterised policy that can select actions without consulting a 
+value function. The parameters of the policy are called policy weights
+•
+A value function may be used to learn the policy weights but this is not required for 
+action selection
+•
+Policy gradient methods are methods for learning the policy weights using the gradient 
+of some performance measure with respect to the policy weights
+•
+Policy gradient methods seek to maximise performance and so the policy weights are 
+updated using gradient ascent
+Policy-based Reinforcement Learning
+•
+Search directly for the optimal policy π*
+•
+Can use any parametric supervised machine learning model to learn policies 
+π(a |s; θ) where θ represents the learned parameters 
+•
+Recall that the optimal policy is the policy that achieves maximum future 
+return
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Policy Approximation
+29
+1. Start with a random value 
+     of w (e.g. w = 12)
+2. Compute the gradient 
+    (derivative) of L(w) at point
+     w = 12. (e.g. dL/dw = 6)
+3. Recompute w as:
+𝑤 =  𝑤 – 𝜆(𝑑𝐿(𝑤) / 𝑑𝑤)
+𝐿𝑤
+𝑤
+w=12
+Gradient Descent
+•
+Optimizer for functions.
+•
+Guaranteed to find optimum for convex functions.
+•
+Non-convex = find local optimum.
+•
+Works for multi-variate functions.
+•
+Need to compute matrix of partial derivatives (“Jacobian”)
+30
+Policy Gradient: General Idea
+Directly learn policy from  objective function:
+𝐽𝜃= 𝔼![𝑟(τ)]
+τ: trajectory of (s,a,r) pairs
+Directly maximize 𝐽(𝜃) : obtain the update equation:
+𝜃"#$ = 𝜃" + 𝛼∇𝐽(𝜃")
+Policy gradient theorem: It can be shown that:
+∇𝐽(𝜃!) ∝'
+"
+𝜇(𝑠) '
+#
+𝑞$(𝑠, 𝑎)∇𝜋(𝑎|𝑠, 𝜃!)
+Refer to textbook for derivation. 
+It forms the basis for the policy 
+gradient family of methods
+Policy Approximation
+• Basic assumption: policy is differentiable w.r.t. θ . Eg:
+soft-max in action 
+preferences
+• Action preferences could also be linear:
+• For some problems, it is simpler to learn the policy directly rather than learning the 
+value functions, and extracting the policy from it later.
+Notation
+• The policy is π(a | s, θ), which represents the probability that action a is taken in state 
+s with policy weight vector θ
+• If using learned value functions, the value function’s weight vector is w
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+REINFORCE
+REINFORCE
+Using the policy gradient theorem, the update rule can be modified to be:
+𝜃"#$ = 𝜃" + 𝛼𝛾"𝐺"∇𝑙𝑛𝜋(𝑎"|𝑠", 𝜃")
+where                  𝐺" = ?
+%&"#$
+'
+𝛾%("($ 𝑅%
+Iteratively updating 𝜃 with the above update rule will lead to the optimal policy 𝜋∗
+REINFORCE Properties and Algorithm
+•
+On-policy method based on SGD
+•
+Uses the complete return from time t, which includes all future rewards until the end of 
+the episode
+•
+REINFORCE is thus a Monte Carlo algorithm and is only well-defined for the episodic case 
+with all updates made in retrospect after the episode is completed
+Actor-Critic Methods
+Actor-critic methods are a fusion of policy gradient and value-based methods
+Actor: deals with the policy (policy gradient-based)
+𝜃" is updated to minimise 𝛿" with the update rule:
+Critic: evaluates the actor’s action (value-based)
+𝛿" = 𝑟"#$ + 𝛾𝑉𝑠"#$ −𝑉(𝑠")
+𝑎"~𝜋%
+𝜃" ←𝜃" + 𝛽𝛿"
+where 𝛽 is a positive step size hyperparameter
+Modern approaches include several variants of the actor-critic algorithm. 
+Both actor and critic are updated using 𝛿! to determine the optimal policy 𝜋∗  
+One-step Actor-Critic Update Rules
+•
+On-policy method
+•
+The state-value function update rule is the TD(0) update 
+rule
+•
+The policy function update rule is shown below.
+One-step Actor-Critic Algorithm
+Modern Algorithms
+•
+Trust Region Policy Optimisation
+•
+Proximal Policy Optimisation (Simplification of TRPO)
+•
+Soft Actor-Critic (SAC)
+•
+DDPG (Deep deterministic policy gradient)
+•
+and many more!
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on introducing Deep Learning for RL.
+•
+Future topics will expand on this topic by looking at particular methods in Deep RL. 
+•
+Ensure you understand what was discussed here before doing the following topics
+For more detailed information see:
+•
+https://www.ics.uci.edu/~dechter/courses/ics-295/fall-
+2019/texts/An_Introduction_to_Deep_Reinforcement_Learning.pdf
+•
+https://rail.eecs.berkeley.edu/deeprlcourse/
+• Other Readings:
+•
+ Playing Atari with Deep Reinforcement Learning (https://arxiv.org/abs/1312.5602)
+Readings
+40

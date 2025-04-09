@@ -1,0 +1,899 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Function Approximation
+Deakin University CRICOS Provider Code: 00113B
+Tabular approach:
+•
+Single entry in a table of values
+•
+States and actions have discrete representations
+•
+Working set of algorithms
+•
+Convergence proofs
+Approach so far
+2
+State
+Action
+s1
+s2
+s3
+s4
+a1
+a2
+a3
+Q(s1,a1)
+Q(s2,a1)
+Q(s3,a1)
+Q(s4,a1)
+Q(s1,a2)
+Q(s2,a2)
+Q(s3,a2)
+Q(s4,a2)
+Q(s1,a3)
+Q(s2,a3)
+Q(s3,a3)
+Q(s4,a3)
+𝜋∗
+Deakin University CRICOS Provider Code: 00113B
+Limitations of Tabular Approach
+3
+State
+Action
+s1
+s2
+s3
+s4
+a1
+a2
+a3
+Q(s1,a1)
+Q(s2,a1)
+Q(s3,a1)
+Q(s4,a1)
+Q(s1,a2)
+Q(s2,a2)
+Q(s3,a2)
+Q(s4,a2)
+Q(s1,a3)
+Q(s2,a3)
+Q(s3,a3)
+Q(s4,a3)
+𝜋∗
+Function approximators 
+(Linear, RBF, NN)
+Deakin University CRICOS Provider Code: 00113B
+Let’s first consider state value prediction 𝑣! with function approximation. 
+•
+Instead of representing each state in a table of values, we represent it in a parameterised 
+functional form using a weight vector 𝐰∈ℝ!
+•
+Hence, we write the value for the approximate value of state 𝑠 as given the weight vector 𝐰: 
+%𝑣𝑠, 𝐰≈𝑣"(𝑠)
+–
+The number of dimensions of the vector is strictly much less the number of raw states 𝑑≪𝒮.
+–
+Hence changing the value of one weight changes the value of many weights
+–
+Problem now is to find a 𝐰* that best approximates 𝑣"(𝑠) (or 𝑄"(𝑠, 𝑎))
+Function Approximation
+4
+https://www.researchgate.net/profile/Facundo_Bre/publication/321259051/figure/fig1/AS:614329250496529@1523478915726/Artificial-neural-network-architecture-ANN-i-h-1-h-2-h-n-o.png
+https://miro.medium.com/max/3840/1*jojTznh4HOX_8cGw_04ODA.png
+Examples of what "𝑣 might be
+Could be a linear function of features in the state where 𝐰 is the weight of each feature
+Could be non-linear function of features in the state computed over an Artificial Neural Network
+Could be function computed by a decision tree where 𝐰 is all the numbers defining the split points of the 
+tree
+It worth noting that the new notation can still represent the tabular approaches seen so far. 
+For instance, represent the state as a vector of the table entries. The feature representing the location of the agent is set to 1 and all others to 0.
+Deakin University CRICOS Provider Code: 00113B
+A special case of function approximation commonly used Linear function approximation. 
+•
+That is our approximation function %𝑣0, 𝐰 is linear function over the weight vector 𝐰.
+•
+Where each state 𝑠 is represented with a vector x 𝑠= 𝑥# 𝑠, 𝑥$ 𝑠, ⋯, 𝑥! 𝑠
+%, where 𝐱𝑠
+= 𝐰
+•
+Now we can represent our state-value function using the inner product of 𝐰 and x 𝑠
+%𝑣𝑠, 𝐰= 𝐰%x 𝑠= 6
+&'#
+!
+𝑤&𝑥& 𝑠
+•
+Here x 𝑠 is referred to as the feature vector for the state 𝑠.
+Linear Methods
+5
+G
+x 𝑠= [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
+𝐰= [0.0,0.1,0.2,0.4,0.1,0.3,0.4,0.6,0.2,0.4,0.6,0.8,0.4,0.6,0.8,1.0]
+%𝑣𝑠, 𝐰= 𝐰%x 𝑠= 0.3
+Deakin University CRICOS Provider Code: 00113B
+Probably the simplest approach for function approximation is State Aggregation. 
+•
+The aim is simply to group similar states together and treat them as a single state
+•
+The grouped states are represented with a single value within the weight vector 
+State Aggregation
+6
+https://www.researchgate.net/profile/Facundo_Bre/publication/321259051/figure/fig1/AS:614329250496529@1523478915726/Artificial-neural-network-architecture-ANN-i-h-1-h-2-h-n-o.png
+https://miro.medium.com/max/3840/1*jojTznh4HOX_8cGw_04ODA.png
+For example
+Image we have a grid world with 10,000 grids in two dimensions = 100 million discrete states.
+Recall the more states then the more values to learn and less often we get to visit them relative to 
+all the states
+Now if we know an action may move us between one step up to 100 grids during each time step 
+then we may group 50 states of each dimension as a single state. 
+This will reduce our states to 200×200 = 40,000 states
+Faster learning but each group of 
+50 states will each be assigned 
+a single common value.
+This is 1 state now
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Stochastic Gradient MC
+Deakin University CRICOS Provider Code: 00113B
+In Gradient Descent our aim is to reduce the error of all our examples. 
+•
+However, this is not useful in RL because we do not have all the examples when learning online through interaction.
+Stochastic Gradient Descent (SGD) allows us to use a single example by adjusting our weight vector 𝐰 in the direction 
+of the estimated error, governed by a small factor 𝛼. 
+•
+To do this we must be able to identify the direction of the error, hence our function %𝑣𝑠, 𝐰 must be differentiable.
+–
+We find the slope of a function by finding its partial derivative in this case with respect to 𝐰
+•
+Now when calculating an update we move the weight vector towards a 
+smaller error by moving a small amount in the direction of the error. 
+•
+In the linear case this reduces to:
+E.g. the gradient for the example on the previous slide is 
+Stochastic Gradient MC
+8
+Input: 
+ 
+the policy π to be evaluate 
+ 
+A differentiable function "𝑣: 𝒮×ℝ! →ℝ
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+Initialise:  
+ 
+𝐰∈ℝ! arbitrarily e.g. 𝐰= 0
+Loop forever (for each episode):
+ 
+Generate an episode based on π: 𝑆", 𝐴", 𝑅#, 𝑆#, 𝐴#, 𝑅$, … , 𝑆%&#, 𝐴%&#, 𝑅%
+ 
+Loop for each step of the episode 𝑡= 0,1, … , 𝑇−1:
+ 
+ 
+𝐰= 𝐰+ 𝛼𝐺' −"𝑣𝑆', 𝐰∇"𝑣𝑆', 𝐰 
+∇𝑓𝐰=
+𝜕𝑓𝐰
+𝜕𝑤&
+, 𝜕𝑓𝐰
+𝜕𝑤&
+, ⋯, 𝜕𝑓𝐰
+𝜕𝑤&
+%
+𝐰()#  = 𝐰( + 𝛼𝐺( −%𝑣𝑆(, 𝐰(
+∇%𝑣𝑆(, 𝐰(
+∇%𝑣𝑆(, 𝐰( = [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
+Stochastic Gradient Descent for MC Prediction
+𝐰()#  = 𝐰( + 𝛼𝐺( −%𝑣𝑆(, 𝐰(
+x 𝑠
+Deakin University CRICOS Provider Code: 00113B
+When using applying these ideas to bootstrapping methods (e.g. TD) then we are basing updates on an estimate rather 
+than the true value. 
+Semi-gradient methods need to replace the true target with an estimate of the target
+Semi-Gradient 𝑻𝑫(𝟎)
+9
+Input: 
+ 
+the policy π to be evaluate 
+ 
+A differentiable function "𝑣: 𝒮×ℝ! →ℝ
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+Initialise:  
+ 
+𝐰∈ℝ! arbitrarily e.g. 𝐰= 0
+Loop forever (for each episode):
+ 
+Initialize 𝑆
+ 
+Loop for each step of the episode until 𝑆∈S()*+,-./0) :
+ 
+ 
+Choose 𝐴~𝜋(@ |𝑆)
+ 
+ 
+Take action 𝐴, observe 𝑅, 𝑆2
+ 
+ 
+𝐰= 𝐰+ 𝛼𝑅+ 𝛾"𝑣𝑆2, 𝐰−"𝑣𝑆, 𝐰∇"𝑣𝑆, 𝐰
+ 
+ 
+𝑆←𝑆2
+𝐺( = 𝑅()# + 𝛾%𝑣𝑆"#$, 𝐰
+Why semi-gradient?
+When we update w, we take into 
+account the change in estimate, but 
+don’t take into account the change in 
+the target (which also depends on w)
+So the gradient computed only 
+represents part of the true gradient
+Stability issues!
+Deakin University CRICOS Provider Code: 00113B
+Recall we were able to use eligibility traces to define an algorithm that sat between MC and TD(0). 
+•
+We obviously also wish to have this ability when using function approximation.
+•
+This will allow us to update the weight vector each iteration, balance computation throughout instead of just at the end, and allow its 
+application to continuing problems.
+Semi-Gradient 𝑻𝑫(𝝀)
+10
+Input: 
+ 
+The policy π to be evaluate 
+ 
+A differentiable function "𝑣: 𝒮×ℝ! →ℝ
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+ 
+Trace decay rate 𝜆∈[0,1]
+Initialise:  
+ 
+𝐰∈ℝ! arbitrarily e.g. 𝐰= 0
+Loop forever (for each episode):
+ 
+Initialize 𝑆
+ 
+Reset 𝐳= 𝟎
+ 
+Loop for each step of the episode until 𝑆∈S()*+,-./0) :
+ 
+ 
+Choose 𝐴~𝜋(@ |𝑆)
+ 
+ 
+Take action 𝐴, observe 𝑅, 𝑆2
+ 
+ 
+𝐳←𝛾𝜆𝐳+ ∇"𝑣𝑆, 𝐰
+ 
+ 
+𝛿←𝑅+ 𝛾"𝑣𝑆2, 𝐰−"𝑣𝑆, 𝐰
+ 
+ 
+𝐰= 𝐰+ 𝛼𝛿𝐳
+ 
+ 
+𝑆←𝑆2
+Instead of defining a  trace for each state, we 
+define it as a vector 𝐳" ∈ℝ%, 𝑠. 𝑡. 𝐳= 𝐰
+ 
+𝐳*# = 0
+ 
+𝐳( = 𝛾𝜆𝐳(*# + ∇%𝑣𝑆(, 𝐰𝒕,  
+0 ≤𝑡≤𝑇
+         
+        Now we can update the weight vector proportionally 
+to the trace vector
+ 
+𝐰()# = 𝐰( + 𝛼𝛿(𝐳(
+        Where the TD-error is calculated the same as 𝑇𝐷(0)
+ 
+ 
+𝛿( = 𝑅()# + 𝛾%𝑣𝑆()#, 𝐰𝒕−%𝑣𝑆(, 𝐰𝒕
+        Instead of having to iterate through each 𝑒𝑠 as we 
+did in the tabular case, we simply update the 
+trace vector in a single operation
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Function approximation with Control
+Deakin University CRICOS Provider Code: 00113B
+Now that we have a method of prediction, we can investigate a method of control. 
+•
+Now we want to approximate the action-value function %𝑞≈𝑞".
+•
+That is, we will represent the parameterized functional form using a weight vector 𝐰.
+Hence, One-step Sarsa with function approximation is defined with the update rule
+Semi-Gradient Control
+12
+𝐰𝒕)𝟏= 𝐰( + 𝛼𝑅()# + 𝛾%𝑞𝑆()#, 𝐴()#, 𝐰𝒕−%𝑞𝑆(, 𝐴(, 𝐰𝒕
+∇%𝑞𝑆(, 𝐴(, 𝐰𝒕
+Control, however, is not just mapping the state to our vector 𝒘 but also our actions.
+ 
+ 
+For discrete actions this is perfectly fine – use a matrix where each column represents one of the possible actions.
+ 
+ 
+Can also use a function approximation, such as action aggregation approach on the actions 
+ 
+ 
+However, every action increases the dimensionality of our value function
+ 
+  Neither of these are always suitable – Sometimes we want to have precise actions
+ 
+ 
+E.g. The angle we turn the steering wheel on a car must be very precise to avoid an accident
+ 
+ 
+This type of continuous action control  is very much still an open question.
+ 
+  For now, we will assume there is a manageable discrete set of actions to select from
+Deakin University CRICOS Provider Code: 00113B
+Semi-Gradient 𝑺𝒂𝒓𝒔𝒂(𝟎)
+13
+Input: 
+ 
+A differentiable state-action value function "𝑞: 𝒮×𝒜×ℝ! →ℝ
+ 
+A policy 𝜋 if predicting or 𝑞3 if estimating (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+Initialise:  
+ 
+𝐰∈ℝ! arbitrarily e.g. 𝐰= 0
+Loop forever (for each episode):
+ 
+𝑆, 𝐴← Initial state and action of episode (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+Loop for each step of the episode until 𝑆∈S()*+,-./0) :
+ 
+ 
+Take action 𝐴, observe 𝑅, 𝑆2 
+ 
+ 
+If 𝑆2 ∈𝑆'456789: then:
+ 
+ 
+ 
+ 𝐰= 𝐰+ 𝛼𝑅+ 𝛾"𝑞𝑆, 𝐴, 𝐰∇"𝑞𝑆, 𝐴, 𝐰, special case for terminal state can’t include future state
+ 
+ 
+else:
+ 
+ 
+ 
+Choose 𝐴2 as a function of "𝑞𝑆2,@, 𝐰 (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+ 
+ 
+𝐰= 𝐰+ 𝛼𝑅+ 𝛾"𝑞𝑆2, 𝐴2, 𝐰−"𝑞𝑆, 𝐴, 𝐰∇"𝑞𝑆, 𝐴, 𝐰
+ 
+ 
+ 
+𝑆←𝑆2
+ 
+ 
+ 
+𝐴←𝐴′
+Sarsa can also be extended to use eligibility traces similar to 𝑇𝐷(𝜆) – Note: This assumes binary features
+Deakin University CRICOS Provider Code: 00113B
+𝑺𝒂𝒓𝒔𝒂𝝀 with Linear Function Approximation
+14
+Input: 
+ 
+A policy 𝜋 if predicting or 𝑞! if estimating (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+A feature function ℱ𝑠, 𝑎 returning the set of active feature indices for 𝑠, 𝑎
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+ 
+Trace decay rate 𝜆∈[0,1]
+Initialise:  
+ 
+𝐰∈ℝ" arbitrarily e.g. 𝐰= 0
+Loop for each episode:
+ 
+Initialise 𝑆
+ 
+Choose 𝐴~𝜋= 𝑆 initial action of episode (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+Reset 𝐳= 𝟎
+ 
+Loop for each step of the episode until S# is a terminal state:
+ 
+ 
+Take action 𝐴, observe 𝑅, S# 
+ 
+ 
+𝛿←𝑅−∑$∈ℱ',) 𝑤$
+ 
+ 
+for all 𝑖∈ℱ𝑆, 𝐴:
+ 
+ 
+ 
+𝐳←𝐳+ 1 or 𝐳←1 depending on using accumulating or replacing traces
+ 
+ 
+If 𝑆# ∈𝑆*+,-$./0 then:
+ 
+ 
+ 
+𝐰←𝐰+ 𝛼𝛿𝐳
+ 
+ 
+else:
+ 
+ 
+ 
+Choose 𝐴#~𝜋= S#  action (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+ 
+ 
+𝛿←𝛿+ 𝛾∑$∈ℱ'!,)! 𝑤$ 
+ 
+ 
+ 
+𝐰←𝐰+ 𝛼𝛿𝐳
+ 
+ 
+ 
+𝐳←𝛾𝜆𝐳
+ 
+ 
+ 
+𝑆←𝑆#; 
+ 
+ 
+ 
+𝐴←𝐴#; 
+Deakin University CRICOS Provider Code: 00113B
+There is a function approximation version of Watkins’s Q-Learning that has been very popular. 
+•
+Below is a binary features version of the approach which aligns with the Sarsa implementation.
+Semi-Gradient Off-Policy Control
+15
+Note: for most of this unit we 
+are using Sutton and Barto 
+(2018) – This algorithm, 
+however is based on Sutton and 
+Barto (1998) version as they no 
+longer include it in the new 
+version of the book. The 
+reasons discussed on the 
+following slides. However, I 
+include as it is still in common 
+use
+Input: 
+ 
+A feature function ℱ𝑠,𝑎 returning the set of active feature indices for 𝑠,𝑎
+Algorithm Parameter: 
+ 
+Step size 𝛼∈(0,1]
+ 
+Trace decay rate 𝜆∈[0,1]
+Initialise:  
+ 
+𝐰∈ℝ" arbitrarily e.g. 𝐰= 0
+Loop for each episode:
+ 
+Initialise 𝑆
+ 
+Choose 𝐴~𝜋= 𝑆 initial action of episode (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+Reset 𝐳= 𝟎
+ 
+Loop for each step of the episode until S# is a terminal state:
+ 
+ 
+Take action 𝐴, observe 𝑅,S# 
+ 
+ 
+𝛿←𝑅−∑$∈ℱ',) 𝑤$
+ 
+ 
+for all 𝑖∈ℱ𝑆,𝐴: 𝐳←𝐳+ 1
+ 
+ 
+for all 𝑎∈𝒜(𝑠):
+ 
+ 
+ 
+𝑄/ ← ∑$∈ℱ',/ 𝑤$
+ 
+ 
+𝛿←𝛿+ 𝛾max
+/ 𝑄/
+ 
+𝐰←𝐰+ 𝛼𝛿𝐳 
+update all weight vectors
+ 
+ 
+Choose 𝐴#~𝜋= S#  action (e.g. using 𝜀−𝑔𝑟𝑒𝑒𝑑𝑦)
+ 
+ 
+If 𝑔𝑟𝑒𝑒𝑑𝑦_𝑎𝑐𝑡𝑖𝑜𝑛 selected then:
+ 
+ 
+ 
+𝐳←𝛾𝜆𝐳
+ 
+ 
+else:
+ 
+ 
+ 
+ 𝐳←0
+ 
+ 
+𝑆←𝑆#; 
+ 
+ 
+𝐴←𝐴#; 
+Deakin University CRICOS Provider Code: 00113B
+“..the danger of instability and divergence arises whenever we combine all of the following three elements, making up 
+what we call the deadly triad.”
+•
+Function approximation
+•
+Bootstrapping
+•
+Off-Policy training
+The Deadly Triad
+16
+Can we give up one of them? Presence of any 2 appears to be manageable (leads to stable learning)
+Function approximation – Can not be replaced in large state spaces without introducing the Curse-of-Dimensionality
+Bootstrapping – Is possible but at the cost of significantly more computation and loss of efficiency with increased 
+memory costs
+Off-Policy training – we can just use on-policy methods instead and often that is good. However, there are many use 
+cases where we want to learn multiple policies simultaneously in parallel. 
+Watkins’ Q-Learning with function approximation however has been found to be unstable and does not always converge. 
+Deakin University CRICOS Provider Code: 00113B
+There are a number of approaches recently that provide stable off-poly methods with function approximation. 
+•
+For instance, one approach might be to select off-policy behaviours that are close to the target policy can be effective
+Gradient-TD methods. 
+•
+Aim to minimize the Projected Bellman Error instead of reducing the TD-error
+•
+They achieve this but effectively double the computational complexity
+Emphatic-TD methods. 
+•
+These methods rewrite the state transitions using importance sampling s.t. they are appropriate for learning the target policy
+–
+It does this while using the behaviour policy distributions
+These methods however are not explored in these classes. 
+•
+They can be explored for your major research task
+Stable Off-policy Methods
+17
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Feature Construction
+Deakin University CRICOS Provider Code: 00113B
+For function approximation, we need to convert the state-value function to feature vectors. 
+This can be done using any of the following:
+•
+Polynomial features
+•
+Fourier basis
+•
+Coarse coding
+•
+Tile coding
+•
+Sparse coding
+•
+Dictionary Learning
+Consider the state 𝑠 represented to be represented by a vector x 𝑠= 𝑥$ 𝑠, 𝑥& 𝑠, ⋯, 𝑥% 𝑠
+', where 𝐱𝑠
+= 𝐰
+We can represent our state-value function using the inner product of 𝐰 and x 𝑠
+"𝑣𝑠, 𝐰= 𝐰'x 𝑠= 8
+()$
+%
+𝑤(𝑥( 𝑠
+Function Construction
+19
+Deakin University CRICOS Provider Code: 00113B
+In a polynomial feature, x 𝑠 is a polynomial basis, that is, for a set of states 𝑠= {𝑠$, 𝑠&, 𝑠*, … , 𝑠+}, the polynomial 
+features can be written as
+𝑥( 𝑠= =
+,)$
++
+𝑠,
+-T,U
+where 𝑐(,, is a non-negative integer such that 𝑐(,, = {0, 1, 2, … , 𝑛}
+Thus, we have
+"𝑣𝑠, 𝐰= 𝐰'x 𝑠= 8
+()$
+%
+𝑤( =
+,)$
++
+𝑠,
+-T,U
+and 𝑥( 𝑠 is a n-order polynomial basis in a k-dimensional space spanned by 𝑛+ 1 + different features
+Polynomial Features
+20
+Deakin University CRICOS Provider Code: 00113B
+There are several kinds of polynomial bases, such as:
+•
+Lagrange
+•
+Newton
+•
+Orthogonal polynomials
+•
+Chebyshev
+The Newton basis functions are:
+𝜋+ 𝑡= =
+,)$
++/$
+(𝑡−𝑡,)
+Which gives, in the third order case, the following
+1
+0
+0
+1
+𝑡& −𝑡$
+0
+1
+𝑡* −𝑡$
+𝑡* −𝑡$
+𝑡* −𝑡&
+𝑤$
+𝑤&
+𝑤*
+=
+𝑣$
+𝑣&
+𝑣*
+Polynomial Feature Example
+21
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Fourier Basis
+Deakin University CRICOS Provider Code: 00113B
+•
+Polynomials are not the best - unstable and not very physically meaningful.
+•
+Easier to talk about “signals” in terms of its “frequencies” (how fast/often signals change, etc).
+•
+Any periodic function can be rewritten as a weighted sum of Sines and 
+Cosines of different frequencies (Jean Baptiste Joseph Fourier, 1807).
+The aim is then to understand the frequency w of our signal.  
+So, let’s reparametrize the signal by w instead of x:
+For every w from 0 to inf, F(w) holds the amplitude A and phase f of the 
+corresponding sine  
+Fourier Transform
+23
+f(x)
+F(w)
+Fourier 
+Transform
+)
++f
+wx
+Asin(
+Arbitrary function 
+Single Analytic Expression
+Spatial Domain (x)
+Frequency Domain (u)
+Represent the signal as an infinite weighted sum of an infinite number of 
+sinusoids
+( )
+( )
+ò
+¥
+¥
+-
+-
+=
+dx
+e
+x
+f
+u
+F
+ux
+i p
+2
+(Frequency Spectrum F(u))
+1
+sin
+cos
+-
+=
++
+=
+i
+k
+i
+k
+eik
+Note:
+Inverse Fourier Transform (IFT)
+( )
+( )
+ò
+¥
+¥
+-
+=
+dx
+e
+u
+F
+x
+f
+ux
+i p
+2
+Fourier Transform
+Deakin University CRICOS Provider Code: 00113B
+This means that F can encode both 
+using the imaginary numbers. 
+Consider
+The amplitude is given by
+and the phase is
+Fourier Transform
+25
+)
+(
+)
+(
+)
+(
+w
+w
+w
+iI
+R
+F
++
+=
+2
+2
+)
+(
+)
+(
+w
+w
+I
+R
+A
++
+±
+=
+)
+(
+)
+(
+tan 1
+w
+w
+f
+R
+I
+-
+=
+Deakin University CRICOS Provider Code: 00113B
+In a Fourier basis, the set of states 𝐬= 𝑠$, 𝑠&, 𝑠*, … , 𝑠+ 𝐓 can be expressed using a cosine in the following way
+𝑥( 𝑠= cos(𝜋𝑠1𝐜()
+where 𝐜( = 𝑐$
+(, … , 𝑐+
+( 1 such that 𝑐,
+( ∈{0, 1, 2, … , 𝑛}
+Thus, we have:
+"𝑣𝑠, 𝐰= 𝐰'x 𝑠= 8
+()$
+%
+𝑤(cos(𝜋𝑠1𝐜() 
+Fourier Features
+26
+= 
++
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Coding Methods
+Deakin University CRICOS Provider Code: 00113B
+28
+•
+Coarse coding is used for continuous spaces, but 
+can also be used for state-spaces that are binary or 
+to further encode other features.
+•
+Each ball or sphere is usually called a receptive field.
+•
+Features with large receptive fields give broad 
+generalization, but might yield very coarse 
+approximations
+•
+The trade-off is often a question to be solved for 
+their implementation:
+-Too coarse may not be discriminative enough
+-Too large and the complexity may increase too much
+Coarse Coding
+Deakin University CRICOS Provider Code: 00113B
+29
+The type of receptive field affects the nature of generalisation
+Coarse Coding
+Deakin University CRICOS Provider Code: 00113B
+30
+Coarse Coding
+Deakin University CRICOS Provider Code: 00113B
+31
+Tile Coding
+•
+Makes use of tiles and tilings
+•
+Tiles are elements of tilings 
+•
+If only 1 tiling is used – state 
+aggregation
+•
+Many tilings are used to obtain the 
+ability to represent the state space as 
+finely or coarsely as required 
+(Generalisation)
+•
+Uses binary features
+•
+Tilings are offset from each other 
+uniformly in each dimension
+Deakin University CRICOS Provider Code: 00113B
+32
+Tile Coding
+•
+Tilings are offset from each other 
+uniformly in each dimension
+•
+Diagonal elements become too 
+prominent
+•
+To fix this, the offset can be done 
+unsymmetrically
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on exploring how we can use function approximation in RL.
+•
+Future topics will expand on this topic by looking at Deep RL. 
+•
+Ensure you understand what was discussed here before doing the following topics
+For more detailed information see Sutton and Barto (2018) Reinforcement 
+Learning: An Introduction. Several illustrations here were borrowed from the 
+book.
+•
+Chapter 9.5: Feature Construction for Linear Methods
+•
+http://incompleteideas.net/book/RLbook2020.pdf
+Other readings:
+•
+Isabelle Guyon, Steve Gunn, Masoud Nikravesh, and Lofti Zadeh (Eds.), “Feature Extraction: 
+Foundations and Applications”, Springer, 2006.
+•
+http://www.causality.inf.ethz.ch/ciml/FeatureExtractionManuscript.pdf
+•
+https://sites.fas.harvard.edu/~cs278/papers/ksvd.pdf
+Readings
+33

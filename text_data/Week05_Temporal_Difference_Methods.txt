@@ -1,0 +1,291 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Recap
+Deakin University CRICOS Provider Code: 00113B
+Week 1
+2
+Sutton and Barto (2018)
+Introduction & History, 
+RL formulation: States, Actions, Rewards, Transition function, value function, 
+action-value function 
+Deakin University CRICOS Provider Code: 00113B
+Week 2
+3
+Psychological aspects
+Multiarmed Bandits
+Deakin University CRICOS Provider Code: 00113B
+Week 3
+4
+Types of MDPs
+Dynamic Programming
+Deakin University CRICOS Provider Code: 00113B
+Week 4
+5
+Monte-Carlo Methods
+Monte-Carlo Prediction
+Monte-Carlo Control
+(on/off policy – 
+importance sampling)
+Deakin University CRICOS Provider Code: 00113B
+Pros & Cons
+6
+DP
+Monte-Carlo
+Transition and reward 
+model required
+No model needed
+Requires full sweep of the 
+state/state-action space
+Requires full trajectories 
+of experience
+Convergence guaranteed
+Converges only if 
+states/state-actions are 
+visited enough number of 
+times
+In reality, we don’t have perfect 
+models, and we don’t need full 
+trajectories to learn
+– we learn on-the-go
+Source: https://www.batterseachessclub.org.uk/10-benefits-of-playing-chess/
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Temporal Difference (TD) Learning
+Deakin University CRICOS Provider Code: 00113B
+A combination of Dynamic Programming and Monte Carlo methods:
+• Like Monte Carlo it learns from experience and doesn’t need a model
+• Like Dynamic Programming it updates estimates using other learned estimates
+Temporal Difference (TD) Learning
+8
+Sutton and Barto (2018)
+Temporal difference
+Related to time
+Learning happens as time progresses - can update values without having to wait till 
+the end of the episode
+Deakin University CRICOS Provider Code: 00113B
+Temporal Difference (TD) Learning
+9
+Sutton and Barto (2018)
+In Monte-Carlo, we wait till the end of the episode and update 
+values accordingly:
+In TD, we take one step (and experience one reward) and still try to 
+update the value:
+This is the target
+This is the target for TD
+Deakin University CRICOS Provider Code: 00113B
+Temporal Difference (TD) Learning
+10
+Sutton and Barto (2018)
+The general name is TD(𝜆). This just corresponds to 𝜆= 0
+The TD target                          is a combination of both samples     
+and an estimate (  ) 
+Combination of MC 
+sampling and 
+bootstrapping
+Deakin University CRICOS Provider Code: 00113B
+TD – error
+11
+Sutton and Barto (2018)
+TD error 𝛿
+Depends on the  reward and next state
+This is the error TD methods aim to minimise
+1 step of experience + 
+belief about the future
+Belief about the 
+goodness of the 
+present state
+Deakin University CRICOS Provider Code: 00113B
+Clearly TD (Like MC) is better than DP if you do not have a model
+•
+Most real world problems we do not have a complete or even a partial model – making DP impossible
+•
+DP is also highly computationally intensive.
+TD is also obviously better over MC in online environments
+•
+MC methods must wait until the end of the episode to be updated – problematic in long or continuing tasks.
+•
+If exploration has occurred, then many updates can not be made.
+•
+Whereas, TD you can update more often (each step) – doesn’t matter how long the episode is. 
+•
+TD is less susceptible to issues around exploratory actions – only affects the step when the exploration was taken.
+TD methods have been proven to converge when the policy is fixed.
+•
+Shown for table-based methods in MDPs
+But which is faster (MC or TD)?
+TD vs MC vs DP
+12
+Deakin University CRICOS Provider Code: 00113B
+A simple MDP where you start at C and move left or right until you hit a terminal state.
+•
+Provided policy is just a 50/50 random split between left or right actions. 
+•
+TD Prediction aims to learn the true value for each state
+•
+In this example TD is always better than MC.
+Example
+13
+Sutton and Barto (2018)
+TD makes more efficient 
+use of data
+Deakin University CRICOS Provider Code: 00113B
+TD Control
+14
+TD for Control
+• On-Policy – where our behaviour policy is the same policy we are learning 
+(SARSA)
+• Off-Policy – where we have a separate behaviour policy from the target policy we 
+are attempting to learn (Q learning)
+Deakin University CRICOS Provider Code: 00113B
+SARSA: On-Policy TD Control (2)
+15
+Convergence of SARSA is guaranteed if all state action pairs are guaranteed to be sampled an infinite 
+number of times
+Uses quintuple (𝑆𝑡, 𝐴𝑡, 𝑅𝑡+1, 𝑆𝑡+1, 𝐴𝑡+1). Hence the name SARSA
+Q-Learning: Off-Policy TD Control
+The off-policy equivalent to SARSA is known as Q-Learning (Watkins, PhD thesis 1989). 
+Notice the subtle difference to SARSA – the learning target and the way the actions are selected is different
+Deakin University CRICOS Provider Code: 00113B
+SARSA vs Q-learning
+17
+Both SARSA and Q learning implemented with 𝜀-greedy exploration 
+(𝜀= 0.1)
+Sutton and Barto (2018)
+Note: if 𝜀 was reduced to 0 overtime then both algorithms will converge to 
+an optimal “cliff edge” policy
+Q learning target only “cares” about the best action 
+However, SARSA is on-policy – so it accounts for the action-selection and 
+prefers the safer path
+Even if there is some non-zero probability of falling into the cliff, Q learning still prefers the 
+risky (but optimal) path
+Deakin University CRICOS Provider Code: 00113B
+Expected SARSA
+18
+Expected Sarsa updates its value based on the expected reward – incorporating how likely an action is to 
+be taken. 
+•
+It constructs the learning target based on the probability of each action – doesn’t rely on maxQ(s’,a’) 
+like Q learning, nor does it rely on the taken action.
+•
+So it can act as either On-policy or Off-policy.
+𝑄𝑆𝑡, 𝐴𝑡←𝑄𝑆𝑡, 𝐴𝑡+ 𝛼𝑅𝑡+1 + 𝛾𝔼𝜋𝑄𝑆𝑡+1, 𝐴𝑡+1 |𝑆𝑡+1 −𝑄𝑆𝑡, 𝐴𝑡
+𝑄𝑆𝑡, 𝐴𝑡←𝑄𝑆𝑡, 𝐴𝑡+ 𝛼𝑅𝑡+1 + 𝛾෍
+𝑎
+𝜋𝑎𝑆𝑡+1 𝑄𝑆𝑡+1, 𝑎−𝑄𝑆𝑡, 𝐴𝑡
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Maximisation bias and double Q Learning
+Deakin University CRICOS Provider Code: 00113B
+Maximization bias
+20
+s
+a0
+a1
+a2
+a3
+True Q values = 0
+Q(s,a0)
+Q(s,a1)
+Q(s,a2)
+Q(s,a2)
+𝑚𝑎𝑥𝑎′𝑄𝑡𝑟𝑢𝑒(𝑠, 𝑎′) = 0
+𝑚𝑎𝑥𝑎′𝑄𝑒𝑠𝑡(𝑠, 𝑎′) > 0
+This positive bias is called maximization bias
+Deakin University CRICOS Provider Code: 00113B
+Double Q-Learning
+21
+Proposed as a solution to biased learning
+Maintain two values for each action (𝑄1(𝑎) and 𝑄2(𝑎))
+We then randomly choose one of these values to decide which action we are going to use to select the maximum action
+But then update the value of the other 𝑄 value for that action.
+Can be proved that this addresses the maximization bias issue 
+Deakin University CRICOS Provider Code: 00113B
+Double Q-Learning
+22
+Such “double” versions also exist for SARSA and expected SARSA
+Van Hasselt, Hado, Arthur Guez, and 
+David Silver. "Deep reinforcement 
+learning with double q-
+learning." Proceedings of the AAAI 
+conference on artificial intelligence. Vol. 
+30. No. 1. 2016.
+Deakin University CRICOS Provider Code: 00113B
+Double Q-Learning
+23
+Deakin University CRICOS Provider Code: 00113B
+n-step TD learning
+24
+The TD target relies partially on 
+samples (experience) and 
+partially on bootstrapping 
+estimates 
+So far, we only looked at 1 step 
+of experience.  But in general, 
+we can roll out multiple steps (n-
+steps)
+Deakin University CRICOS Provider Code: 00113B
+This bootstrapping idea can easily be extended to On-Policy Control (and 
+Expected Sarsa)
+•
+Whereas, in 𝑛-step TD we add all the rewards along with the final state estimate. In Sarsa 
+we add all the rewards with the final state-action value estimate.
+𝐺𝑡:𝑡+𝑛= 𝑅𝑡+1 + 𝛾𝑅𝑡+2 + 𝛾2𝑅𝑡+3 + ⋯+ 𝛾𝑛−1𝑅𝑡+𝑛+ 𝛾𝑛𝑄𝑡+𝑛−1 𝑆𝑡+𝑛, 𝐴𝑡+𝑛
+•
+In Expected Sarsa we do the same except in the last step we use a weighted sum of the 
+estimates of possible actions.
+𝐺𝑡:𝑡+𝑛= 𝑅𝑡+1 + 𝛾𝑅𝑡+2 + 𝛾2𝑅𝑡+3 + ⋯+ 𝛾𝑛−1𝑅𝑡+𝑛+ 𝛾𝑛ത𝑉𝑡+𝑛−1 𝑆𝑡+𝑛 
+•
+Where ത𝑉𝑡𝑠 is the expected approximate value of state 𝑠. 
+•
+This is calculate using the estimated action values of all states from s weighted by the 
+probability of their being selected using policy 𝜋
+ത𝑉𝑡𝑠= ෍
+𝑎
+𝜋𝑎𝑠𝑄𝑡(𝑠, 𝑎)
+𝒏-step Sarsa (TD On-policy Control)
+25
+Sutton and Barto (2018)
+Deakin University CRICOS Provider Code: 00113B
+In Searching for a goal using on-policy control
+•
+The path taken which are also all the states that will be backed up using MC
+•
+The state-actions learnt using a one-step Sarsa and 10-step Sarsa
+•
+It is evident that 10 step Sarsa will learn more state-action values. 
+Example: Gridworld with 𝒏-step Sarsa 
+26
+Sutton and Barto (2018)
+Deakin University CRICOS Provider Code: 00113B
+Putting it all together
+27
+Sutton and Barto (2018)
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on methods for solving MDPs using 
+Temporal difference.
+•
+Future topics will look into advanced topics in using Temporal 
+difference learning. 
+•
+Ensure you understand what was discussed here before doing the 
+following topics
+For more detailed information see Sutton and Barto (2018) 
+Reinforcement Learning: An Introduction
+•
+Chapter 6: Temporal-Difference Learning
+•
+http://incompleteideas.net/book/RLbook2020.pdf
+•
+Lecture content has been borrowed from the above mentioned 
+book
+Readings
+28

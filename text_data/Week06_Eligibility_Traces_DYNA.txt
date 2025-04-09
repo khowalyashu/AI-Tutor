@@ -1,0 +1,158 @@
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Eligibility Traces
+Deakin University CRICOS Provider Code: 00113B
+Temporal Difference (TD) Learning
+2
+Sutton and Barto (2018)
+The general name is TD(𝜆). This just corresponds to 𝜆= 0
+The TD target                          is a combination of both samples     
+and an estimate (  ) 
+Combination of MC 
+sampling and 
+bootstrapping
+Deakin University CRICOS Provider Code: 00113B
+In Searching for a goal using on-policy control
+•
+The path taken which are also all the states that will be backed up using MC
+•
+The state-action’s learnt using a one-step Sarsa and 10-step Sarsa
+•
+It is evident that 10 step Sarsa will learn more state-action values. 
+Example: Gridworld with 𝒏-step Sarsa 
+3
+Sutton and Barto (2018)
+Key idea – when performing the update, instead of updating just the current state, why not also update 
+states that led to that state?
+Eligibility Traces
+4
+Sutton and Barto (2018)
+It would be useful to extend what learned at t+1 also to previous states, so to accelerate learning.
+Eg: Key helped unlock the treasure, but door led to the key. So when updating the the value of the ‘Key’ 
+state, make sure some of the credit goes to the ‘Door’ state as well
+Eligibility Traces: the backward view
+5
+Sutton and Barto (2018)
+Eligibility trace values of non-visited traces decay by a factor of 𝜆
+Eligibility Traces 
+6
+Sutton and Barto (2018)
+If a state is visited, increase its trace value:
+Accummulating traces:
+Replacing traces:
+Dutch traces:
+Eligibility traces essentially serve as a sort of 
+memory of which states are relevant to the 
+current update. The end result is 
+convergence speeds up.
+Learning with Eligibility Traces
+7
+Set 𝜆= 0, we get TD(0)
+𝜆= 1 corresponds to Monte-Carlo
+Learning with Eligibility Traces: SARSA(𝝀)
+8
+Learning with Eligibility Traces: Q(𝝀)
+9
+Deakin University CRICOS Provider Code: 00113B
+Presented by: 
+Thommen George Karimpanal
+School of Information Technology
+SIT796 Reinforcement Learning
+Planning, Learning and Dyna
+Learning with a model
+11
+So far we discussed about learning from interactions
+We don’t actually need to experience things to learn 
+– we can imagine!
+We imagine by building and playing out models 
+of the world, build from interaction data 
+Learning with a model
+12
+Knowledge 
+Update
+Next state s’ 
+reward  r
+State s action 
+a
+Real world/Environment
+Updating values with interactions with the real world: Learning
+Model
+Updating values with interactions with the real world: Planning
+-But generally, our model is not perfect
+- If it was we would never really need to 
+interact with the real world
+-Real world interactions are expensive
+- Robots/environment can get damaged
+- Experiments can take time
+- Models are built using interactions in the 
+first place
+Integrating Planning and Learning
+13
+Both planning and direct RL aims to update 
+the value/policy
+So both processes can be interrupted if 
+needed
+DYNA architecture
+14
+DYNA
+15
+Learning
+Model update
+Planning
+The model could be trained using any known method (eg: supervised learning)
+DYNA architecture
+16
+More planning steps means 
+faster learning
+When the model is wrong: Blocking Maze
+17
+After sometime, the correct path is found
+During the latter half of learning, the model makes 
+optimistic predictions, which never come true 
+Providing a dedicated exploration bonus 
+(as in Dyna-Q+) is useful
+When the model is wrong: Shortcut Maze
+18
+Dyna-Q tends to get stuck and fails to improve – 
+because the model’s predictions are correct and the 
+agent still reaches the goal
+Dyna-Q+ eventually discovers the shortcut
+Prioritized Sweeping
+19
+Similar to Dyna, but experiences are prioritized 
+: learning rate
+: discount factor
+Temporal difference (TD) error
+Higher error experiences are prioritized
+Prioritized Sweeping
+20
+Prioritization
+Planning
+Update priority 
+queue
+Model update
+Deakin University CRICOS Provider Code: 00113B
+This lecture focused on eligibility traces and DYNA.
+•
+Future topics will look at function approximation techniques and alternatives to value 
+based approaches
+For more detailed information see Sutton and Barto (2018) 
+Reinforcement Learning: An Introduction (Version 2)
+•
+Chapter 12 and Chapter 8
+•
+http://incompleteideas.net/book/RLbook2020.pdf
+Other Readings - Sutton and Barto (1998) Reinforcement Learning: An 
+Introduction (Version 1)
+•
+Chapter 7: Eligibility Traces 
+•
+http://incompleteideas.net/book/first/ebook
+•
+Note: this book is now primarily obsolete but some parts are worth knowing as they 
+are commonly used
+Readings
+21
