@@ -91,7 +91,7 @@ def load_json_data():
     Load JSON data with error handling.
     """
     try:
-        json_path = os.path.join(DATA_DIR, "output.json")
+        json_path = os.path.join(DATA_DIR, "output_2.json")
         with open(json_path) as f:
             return json.load(f)
     except Exception as e:
