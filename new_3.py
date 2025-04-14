@@ -5,7 +5,6 @@ from langchain import LLMChain, PromptTemplate
 from langchain.chains import RetrievalQA, StuffDocumentsChain
 from langchain.vectorstores import Chroma
 from flask import Flask, request, jsonify
-import gradio as gr
 import json
 import os
 from langchain_community.llms import VLLM
@@ -14,6 +13,7 @@ import numpy as np
 from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
+from flask_cors import CORS  # Import CORS for cross-origin support
 
 # Configuration variables - can be moved to environment variables or config file
 MODEL_NAME = 'microsoft/phi-4'
@@ -23,7 +23,10 @@ CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 0
 SIMILARITY_THRESHOLD = 0.55
 BATCH_SIZE = 64
+PORT = 5000  # Port for the API
+
 app = Flask(__name__)
+CORS(app)  # Add CORS support for all routes
 
 # Use relative path with os.path.join for cross-platform compatibility
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'text_data')
@@ -130,14 +133,6 @@ def get_title(links):
 def calculate_query_doc_similarity(query, vectorstore, k=5):
     """
     Calculate cosine similarities between a query and the top k retrieved documents.
-    
-    Args:
-        query (str): The input query string.
-        vectorstore: The vector store instance (e.g., Chroma).
-        k (int): Number of top documents to retrieve (default: 5).
-    
-    Returns:
-        tuple: (top2_similarities, average_similarity)
     """
     try:
         # Initialize retriever
@@ -179,14 +174,6 @@ def calculate_query_doc_similarity(query, vectorstore, k=5):
 def get_most_related_keys(titles, dictionary, top_n=5):
     """
     Find the top N keys in a dictionary most related to a given list of titles based on cosine similarity.
-    
-    Args:
-        titles (list of str): List of title strings to compare against.
-        dictionary (dict): Dictionary with keys (strings) and values.
-        top_n (int): Number of top related keys to return (default: 5).
-    
-    Returns:
-        list: List of most related keys.
     """
     try:
         if not titles or not dictionary:
@@ -261,18 +248,17 @@ def query_rag_model(query, k):
 
 def rag_interface(query, k=5):
     """
-    Interface function for Gradio.
+    Interface function for the API.
     """
     if not query.strip():
-        return "Please enter a query.", [], "0.0000"
+        return {
+            "response": "Please enter a query.",
+            "titles": [],
+            "top2_scores": [],
+            "avg_score": 0.0
+        }
         
     response, titles, top2_scores, avg_score = query_rag_model(query, k)
-
-    # Format top2_scores as a string
-    top2_scores_str = str(top2_scores)
-
-    # Format average score
-    avg_score_str = f"{float(avg_score):.4f}" if isinstance(avg_score, (int, float)) else "0.0000"
 
     # Remove duplicates from titles
     unique_titles = list(set(titles)) if titles else []
@@ -284,7 +270,49 @@ def rag_interface(query, k=5):
     else:
         final_response = response
 
-    return final_response, top2_scores_str, avg_score_str
+    return {
+        "response": final_response,
+        "titles": unique_titles,
+        "top2_scores": top2_scores,
+        "avg_score": float(avg_score)
+    }
+
+# API Endpoints
+@app.route('/api/query', methods=['POST'])
+def api_query():
+    """
+    API endpoint to submit a query to the RAG model.
+    Expects JSON with 'query' field and optional 'k' field.
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'query' not in data:
+            return jsonify({
+                "error": "Missing query parameter",
+                "status": "error"
+            }), 400
+            
+        query = data['query']
+        k = int(data.get('k', 5))  # Default to 5 if not provided
+        
+        result = rag_interface(query, k)
+        return jsonify(result), 200
+        
+    except Exception as e:
+        print(f"API error: {e}")
+        return jsonify({
+            "error": str(e),
+            "status": "error"
+        }), 500
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Simple health check endpoint."""
+    return jsonify({
+        "status": "healthy",
+        "message": "RAG API is running"
+    }), 200
 
 # Main execution block
 if __name__ == "__main__":
@@ -362,21 +390,6 @@ if __name__ == "__main__":
         document_variable_name="context"  
     )
 
-    # Define Gradio interface
-    iface = gr.Interface(
-        fn=rag_interface,  # Function to call
-        inputs=[  
-            gr.Textbox(label="Query", placeholder="Enter your question here..."),
-            gr.Slider(minimum=1, maximum=25, step=1, value=5, label="Number of Documents to Retrieve (k)"),
-        ],
-        outputs=[  
-            gr.Markdown(label="Response"),
-            gr.Textbox(label="Top 2 Scores"),
-            gr.Textbox(label="Avg Confidence Score"),
-        ],
-        title="# 📚 Deakin AI Tutor",
-        description="Enter your query and adjust 'k' to control the number of documents to retrieve for answering."
-    )
-
-    # Launch the interface
-    iface.launch(share=True)
+    # Run the Flask app
+    print(f"Starting RAG API on port {PORT}")
+    app.run(host='0.0.0.0', port=PORT, debug=False)
